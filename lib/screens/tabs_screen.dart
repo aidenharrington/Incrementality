@@ -1,8 +1,12 @@
 import 'package:flutter/material.dart';
+import 'package:incrementality/screens/fitness_screen.dart';
+import 'package:incrementality/screens/study_screen.dart';
 
 import './tasks_screen.dart';
 import './profile_screen.dart';
+import '../widgets/app_bars/fitness_top_bar.dart';
 import '../widgets/app_bars/profile_top_bar.dart';
+import '../widgets/app_bars/study_top_bar.dart';
 import '../widgets/app_bars/tasks_top_bar.dart';
 
 class TabsScreen extends StatefulWidget {
@@ -22,6 +26,16 @@ class _TabsScreenState extends State<TabsScreen> {
         'page': TasksScreen(),
         'title': 'Tasks',
         'appBar': TasksTopBar.appBar,
+      },
+      {
+        'page': StudyScreen(),
+        'title': 'Study',
+        'appBar': StudyTopBar.appBar,
+      },
+      {
+        'page': FitnessScreen(),
+        'title': 'Fitness',
+        'appBar': FitnessTopBar.appBar,
       },
       {
         'page': ProfileScreen(),
@@ -51,8 +65,16 @@ class _TabsScreenState extends State<TabsScreen> {
         currentIndex: _selectedPageIndex,
         items: [
           BottomNavigationBarItem(
-            icon: Icon(Icons.access_time_outlined),
+            icon: Icon(Icons.access_time),
             label: 'Tasks',
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.border_color),
+            label: 'Study',
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.fitness_center),
+            label: 'Fitness',
           ),
           BottomNavigationBarItem(
             icon: Icon(Icons.person),
