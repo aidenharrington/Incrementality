@@ -32,6 +32,7 @@ class _EditTaskScreenState extends State<EditTaskScreen> {
     } else {
       Provider.of<TaskProvider>(context, listen: false).addTask(_task);
     }
+    Navigator.of(context).pop();
   }
 
   @override

@@ -9,7 +9,7 @@ class ProfileScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Study'),
+        title: Text('Profile'),
       ),
       body: PlaceholderWidget(),
       bottomNavigationBar: NavigationBar(3),
