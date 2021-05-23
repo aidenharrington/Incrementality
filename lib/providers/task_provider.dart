@@ -13,14 +13,21 @@ class TaskProvider with ChangeNotifier {
     return _tasks.length;
   }
 
-  void addTask(String name) {
+  void addTask(Task task) {
     _tasks.add(
       Task(
         DateTime.now().toString(),
-        name,
+        task.name,
       ),
     );
     notifyListeners();
+  }
+
+  void updateTask(String id, Task newTask) {
+    final taskIndex = _tasks.indexWhere((task) => task.id == id);
+    if (taskIndex >= 0) {
+      _tasks[taskIndex] = newTask;
+    }
   }
 
   void removeTask(String id) {

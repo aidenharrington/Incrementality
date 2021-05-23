@@ -3,7 +3,7 @@ import 'package:provider/provider.dart';
 
 import './providers/task_provider.dart';
 import './screens/tabs_screen.dart';
-import './screens/task_detail_screen.dart';
+import 'screens/edit_task_screen.dart';
 
 void main() {
   runApp(MyApp());
@@ -26,7 +26,7 @@ class MyApp extends StatelessWidget {
         ),
         routes: {
           '/': (ctx) => TabsScreen(),
-          TaskDetailScreen.routeName: (ctx) => TaskDetailScreen(),
+          EditTaskScreen.routeName: (ctx) => EditTaskScreen(),
         },
         onGenerateRoute: (settings) {
           return MaterialPageRoute(builder: (ctx) => TabsScreen());

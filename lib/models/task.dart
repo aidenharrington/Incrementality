@@ -1,6 +1,6 @@
 class Task {
   final String id;
-  final String name;
+  String name;
 
   Task(this.id, this.name);
 }
