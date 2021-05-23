@@ -2,8 +2,11 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
 import './providers/task_provider.dart';
-import './screens/tabs_screen.dart';
-import 'screens/edit_task_screen.dart';
+import './screens/edit_task_screen.dart';
+import './screens/fitness_screen.dart';
+import './screens/profile_screen.dart';
+import './screens/study_screen.dart';
+import './screens/tasks_screen.dart';
 
 void main() {
   runApp(MyApp());
@@ -25,14 +28,17 @@ class MyApp extends StatelessWidget {
           accentColor: Colors.lightBlue,
         ),
         routes: {
-          '/': (ctx) => TabsScreen(),
+          '/': (ctx) => TasksScreen(),
           EditTaskScreen.routeName: (ctx) => EditTaskScreen(),
+          FitnessScreen.routeName: (ctx) => FitnessScreen(),
+          ProfileScreen.routeName: (ctx) => ProfileScreen(),
+          StudyScreen.routeName: (ctx) => StudyScreen(),
         },
         onGenerateRoute: (settings) {
-          return MaterialPageRoute(builder: (ctx) => TabsScreen());
+          return MaterialPageRoute(builder: (ctx) => TasksScreen());
         },
         onUnknownRoute: (settings) {
-          return MaterialPageRoute(builder: (ctx) => TabsScreen());
+          return MaterialPageRoute(builder: (ctx) => TasksScreen());
         },
       ),
     );

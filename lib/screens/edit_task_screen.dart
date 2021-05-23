@@ -37,32 +37,39 @@ class _EditTaskScreenState extends State<EditTaskScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        appBar: AppBar(
-          title: Text('Task Placeholder'),
-        ),
-        body: Padding(
-          padding: EdgeInsets.all(16),
-          child: Form(
-            key: _form,
-            child: ListView(
-              children: [
-                TextFormField(
-                  initialValue: _initValues['name'],
-                  decoration: InputDecoration(labelText: 'Name'),
-                  textInputAction: TextInputAction.next,
-                  validator: (value) {
-                    if (value.isEmpty) {
-                      return 'Please provide a value.';
-                    }
-                    return null;
-                  },
-                  onSaved: (value) {
-                    _task.name = value;
-                  },
-                ),
-              ],
-            ),
+      appBar: AppBar(
+        title: Text('Task Placeholder'),
+        actions: [
+          IconButton(
+            icon: Icon(Icons.save),
+            onPressed: _saveForm,
           ),
-        ));
+        ],
+      ),
+      body: Padding(
+        padding: EdgeInsets.all(16),
+        child: Form(
+          key: _form,
+          child: ListView(
+            children: [
+              TextFormField(
+                initialValue: _initValues['name'],
+                decoration: InputDecoration(labelText: 'Name'),
+                textInputAction: TextInputAction.next,
+                validator: (value) {
+                  if (value.isEmpty) {
+                    return 'Please provide a value.';
+                  }
+                  return null;
+                },
+                onSaved: (value) {
+                  _task.name = value;
+                },
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
   }
 }
