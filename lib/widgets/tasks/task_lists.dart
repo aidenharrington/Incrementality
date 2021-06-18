@@ -23,6 +23,7 @@ class TasksList extends StatelessWidget {
         : ListView(
             children: tasks
                 .map((task) => TaskItem(
+                      task.id,
                       task.name,
                     ))
                 .toList(),

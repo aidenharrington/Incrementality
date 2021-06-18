@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
+import './helpers/fade_route.dart';
 import './providers/task_provider.dart';
 import './screens/edit_task_screen.dart';
 import './screens/fitness_screen.dart';
@@ -26,6 +27,10 @@ class MyApp extends StatelessWidget {
         theme: ThemeData(
           primarySwatch: Colors.purple,
           accentColor: Colors.lightBlue,
+          pageTransitionsTheme: PageTransitionsTheme(builders: {
+            TargetPlatform.android: FadeTransitionBuilder(),
+            TargetPlatform.iOS: FadeTransitionBuilder(),
+          }),
         ),
         routes: {
           '/': (ctx) => TasksScreen(),

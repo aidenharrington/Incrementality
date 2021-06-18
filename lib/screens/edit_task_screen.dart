@@ -20,6 +20,8 @@ class _EditTaskScreenState extends State<EditTaskScreen> {
   var _initValues = {
     'name': '',
   };
+  var _isInit = true;
+  var _isLoading = false;
 
   void _saveForm() {
     if (!_form.currentState.validate()) {
@@ -33,6 +35,31 @@ class _EditTaskScreenState extends State<EditTaskScreen> {
       Provider.of<TaskProvider>(context, listen: false).addTask(_task);
     }
     Navigator.of(context).pop();
+  }
+
+  @override
+  void didChangeDependencies() {
+    if (_isInit) {
+      final taskId = ModalRoute.of(context).settings.arguments as String;
+      if (taskId != null) {
+        try {
+          _task = Provider.of<TaskProvider>(context, listen: false)
+              .findTaskById(taskId);
+          _initValues = {
+            'name': _task.name,
+          };
+        } catch (error) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text('Could not load task.'),
+              backgroundColor: Theme.of(context).primaryColor,
+            ),
+          );
+        }
+      }
+    }
+    _isInit = false;
+    super.didChangeDependencies();
   }
 
   @override
