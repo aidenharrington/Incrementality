@@ -14,7 +14,7 @@ class StudyScreen extends StatelessWidget {
         title: Text('Study'),
       ),
       body: PlaceholderWidget(),
-      bottomNavigationBar: NavigationBar(1),
+      bottomNavigationBar: NavigationBar(2),
     );
   }
 }

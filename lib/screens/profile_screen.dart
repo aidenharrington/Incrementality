@@ -12,7 +12,7 @@ class ProfileScreen extends StatelessWidget {
         title: Text('Profile'),
       ),
       body: PlaceholderWidget(),
-      bottomNavigationBar: NavigationBar(3),
+      bottomNavigationBar: NavigationBar(4),
     );
   }
 }

@@ -3,6 +3,7 @@ import 'package:provider/provider.dart';
 
 import './helpers/fade_route.dart';
 import './providers/task_provider.dart';
+import './screens/discover_screen.dart';
 import './screens/edit_task_screen.dart';
 import './screens/fitness_screen.dart';
 import './screens/profile_screen.dart';
@@ -34,6 +35,7 @@ class MyApp extends StatelessWidget {
         ),
         routes: {
           '/': (ctx) => TasksScreen(),
+          DiscoverScreen.routeName: (ctx) => DiscoverScreen(),
           EditTaskScreen.routeName: (ctx) => EditTaskScreen(),
           FitnessScreen.routeName: (ctx) => FitnessScreen(),
           ProfileScreen.routeName: (ctx) => ProfileScreen(),

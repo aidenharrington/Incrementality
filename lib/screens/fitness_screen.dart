@@ -14,7 +14,7 @@ class FitnessScreen extends StatelessWidget {
         title: Text('Fitness'),
       ),
       body: PlaceholderWidget(),
-      bottomNavigationBar: NavigationBar(2),
+      bottomNavigationBar: NavigationBar(3),
     );
   }
 }

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 
+import '../screens/discover_screen.dart';
 import '../screens/fitness_screen.dart';
 import '../screens/profile_screen.dart';
 import '../screens/study_screen.dart';
@@ -7,6 +8,7 @@ import '../screens/study_screen.dart';
 class NavigationBar extends StatelessWidget {
   List<String> pageRoutes = [
     '/',
+    DiscoverScreen.routeName,
     StudyScreen.routeName,
     FitnessScreen.routeName,
     ProfileScreen.routeName,
@@ -31,6 +33,10 @@ class NavigationBar extends StatelessWidget {
         BottomNavigationBarItem(
           icon: Icon(Icons.access_time),
           label: 'Tasks',
+        ),
+        BottomNavigationBarItem(
+          icon: Icon(Icons.lightbulb_outline),
+          label: 'Discover',
         ),
         BottomNavigationBarItem(
           icon: Icon(Icons.border_color),
