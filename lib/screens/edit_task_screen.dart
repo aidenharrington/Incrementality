@@ -13,12 +13,20 @@ class EditTaskScreen extends StatefulWidget {
 
 class _EditTaskScreenState extends State<EditTaskScreen> {
   final _form = GlobalKey<FormState>();
+  TextEditingController _dateController = TextEditingController();
+  DateTime _selectedDate = DateTime.now();
   var _task = Task(
     null,
     '',
+    null,
+    null,
+    null,
+    null,
   );
   var _initValues = {
     'name': '',
+    'description': '',
+    'dueDateTime': DateTime.now(),
   };
   var _isInit = true;
   var _isLoading = false;
@@ -32,6 +40,7 @@ class _EditTaskScreenState extends State<EditTaskScreen> {
       Provider.of<TaskProvider>(context, listen: false)
           .updateTask(_task.id, _task);
     } else {
+      _task.createdAt = DateTime.now();
       Provider.of<TaskProvider>(context, listen: false).addTask(_task);
     }
     Navigator.of(context).pop();
@@ -40,6 +49,9 @@ class _EditTaskScreenState extends State<EditTaskScreen> {
   @override
   void didChangeDependencies() {
     if (_isInit) {
+      setState(() {
+        _isLoading = true;
+      });
       final taskId = ModalRoute.of(context).settings.arguments as String;
       if (taskId != null) {
         try {
@@ -58,8 +70,26 @@ class _EditTaskScreenState extends State<EditTaskScreen> {
         }
       }
     }
+    setState(() {
+      _isLoading = false;
+    });
     _isInit = false;
     super.didChangeDependencies();
+  }
+
+  void _selectDate(BuildContext context) async {
+    final DateTime picked = await showDatePicker(
+      context: context,
+      initialDate: _selectedDate,
+      firstDate: DateTime.now(),
+      lastDate: DateTime(2100),
+    );
+    if (picked != null && picked != _selectedDate) {
+      setState(() {
+        _selectedDate = picked;
+        _dateController.text = picked.toIso8601String();
+      });
+    }
   }
 
   @override
@@ -74,30 +104,67 @@ class _EditTaskScreenState extends State<EditTaskScreen> {
           ),
         ],
       ),
-      body: Padding(
-        padding: EdgeInsets.all(16),
-        child: Form(
-          key: _form,
-          child: ListView(
-            children: [
-              TextFormField(
-                initialValue: _initValues['name'],
-                decoration: InputDecoration(labelText: 'Name'),
-                textInputAction: TextInputAction.next,
-                validator: (value) {
-                  if (value.isEmpty) {
-                    return 'Please provide a value.';
-                  }
-                  return null;
-                },
-                onSaved: (value) {
-                  _task.name = value;
-                },
+      body: _isLoading
+          ? Center(
+              child: CircularProgressIndicator(),
+            )
+          : Padding(
+              padding: EdgeInsets.all(16),
+              child: Form(
+                key: _form,
+                child: ListView(
+                  children: [
+                    TextFormField(
+                      initialValue: _initValues['name'],
+                      decoration: InputDecoration(labelText: 'Name'),
+                      textInputAction: TextInputAction.next,
+                      validator: (value) {
+                        if (value.isEmpty) {
+                          return 'Please provide a value.';
+                        }
+                        return null;
+                      },
+                      onSaved: (value) {
+                        _task.name = value;
+                      },
+                    ),
+                    TextFormField(
+                      initialValue: _initValues['description'],
+                      decoration: InputDecoration(labelText: 'Description'),
+                      textInputAction: TextInputAction.next,
+                      maxLines: 3,
+                      keyboardType: TextInputType.multiline,
+                      validator: (value) {
+                        if (value.isEmpty) {
+                          return 'Please provide a value.';
+                        }
+                        return null;
+                      },
+                      onSaved: (value) {
+                        _task.name = value;
+                      },
+                    ),
+                    TextFormField(
+                      onTap: () => _selectDate(context),
+                      onSaved: (value) {
+                        _task.dueDateTime = _selectedDate;
+                      },
+                      controller: _dateController,
+                      decoration: InputDecoration(
+                        labelText: "Date",
+                        icon: Icon(Icons.calendar_today),
+                      ),
+                      validator: (value) {
+                        if (value.isEmpty) {
+                          return "Please enter a date for your task";
+                        }
+                        return null;
+                      },
+                    ),
+                  ],
+                ),
               ),
-            ],
-          ),
-        ),
-      ),
+            ),
     );
   }
 }
