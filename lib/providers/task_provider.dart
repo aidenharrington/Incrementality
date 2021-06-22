@@ -29,6 +29,10 @@ class TaskProvider with ChangeNotifier {
         DateTime.now().toString(),
         task.name,
         DateTime.now(),
+        task.description,
+        task.dueDate,
+        task.dueTime,
+        null,
       ),
     );
     notifyListeners();

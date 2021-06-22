@@ -64,21 +64,17 @@ class _EditTaskScreenState extends State<EditTaskScreen> {
           _initValues = {
             'name': _task.name,
             'description': _task.description,
-            // 'dueDate': _formatDate(_task.dueDate),
-            // 'dueTime': _formatTime(_task.dueTime),
-            'dueDate': _task.dueDate,
-            'dueTime': _task.dueTime,
+            'dueDate': _formatDate(_task.dueDate),
+            'dueTime': _formatTime(_task.dueTime),
+            // 'dueDate': _task.dueDate,
+            // 'dueTime': _task.dueTime,
           };
           setState(() {
             _dateController.text = _initValues['dueDate'];
+            _timeController.text = _initValues['dueTime'];
           });
         } catch (error) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(
-              content: Text('Could not load task.'),
-              backgroundColor: Theme.of(context).primaryColor,
-            ),
-          );
+          print(error);
         }
       }
     }
@@ -176,12 +172,6 @@ class _EditTaskScreenState extends State<EditTaskScreen> {
                       textInputAction: TextInputAction.next,
                       maxLines: 3,
                       keyboardType: TextInputType.multiline,
-                      validator: (value) {
-                        if (value.isEmpty) {
-                          return 'Please provide a value.';
-                        }
-                        return null;
-                      },
                       onSaved: (value) {
                         _task.description = value;
                       },
