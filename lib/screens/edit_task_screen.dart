@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 
 import '../models/task.dart';
@@ -14,7 +15,9 @@ class EditTaskScreen extends StatefulWidget {
 class _EditTaskScreenState extends State<EditTaskScreen> {
   final _form = GlobalKey<FormState>();
   TextEditingController _dateController = TextEditingController();
+  TextEditingController _timeController = TextEditingController();
   DateTime _selectedDate = DateTime.now();
+  TimeOfDay _selectedTime = TimeOfDay.now();
   var _task = Task(
     null,
     '',
@@ -26,7 +29,8 @@ class _EditTaskScreenState extends State<EditTaskScreen> {
   var _initValues = {
     'name': '',
     'description': '',
-    'dueDateTime': DateTime.now(),
+    'dueDate': DateTime.now(),
+    'dueTime': TimeOfDay.now(),
   };
   var _isInit = true;
   var _isLoading = false;
@@ -59,7 +63,15 @@ class _EditTaskScreenState extends State<EditTaskScreen> {
               .findTaskById(taskId);
           _initValues = {
             'name': _task.name,
+            'description': _task.description,
+            // 'dueDate': _formatDate(_task.dueDate),
+            // 'dueTime': _formatTime(_task.dueTime),
+            'dueDate': _task.dueDate,
+            'dueTime': _task.dueTime,
           };
+          setState(() {
+            _dateController.text = _initValues['dueDate'];
+          });
         } catch (error) {
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(
@@ -84,19 +96,49 @@ class _EditTaskScreenState extends State<EditTaskScreen> {
       firstDate: DateTime.now(),
       lastDate: DateTime(2100),
     );
-    if (picked != null && picked != _selectedDate) {
+    if (picked != null) {
       setState(() {
         _selectedDate = picked;
-        _dateController.text = picked.toIso8601String();
+        _dateController.text = _formatDate(picked);
       });
     }
+  }
+
+  void _selectTime(BuildContext context) async {
+    final TimeOfDay picked = await showTimePicker(
+      context: context,
+      initialTime: _selectedTime,
+      initialEntryMode: TimePickerEntryMode.input,
+    );
+    if (picked != null) {
+      setState(() {
+        _selectedTime = picked;
+        _timeController.text = _formatTime(picked);
+      });
+    }
+  }
+
+  String _formatDate(DateTime date) {
+    return DateFormat.yMd().format(date);
+  }
+
+  String _formatTime(TimeOfDay time) {
+    return DateFormat.jm().format(
+      DateTime(
+        _selectedDate.year,
+        _selectedDate.month,
+        _selectedDate.day,
+        time.hour,
+        time.minute,
+      ),
+    );
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Task Placeholder'),
+        title: Text(_initValues['name']),
         actions: [
           IconButton(
             icon: Icon(Icons.save),
@@ -141,22 +183,39 @@ class _EditTaskScreenState extends State<EditTaskScreen> {
                         return null;
                       },
                       onSaved: (value) {
-                        _task.name = value;
+                        _task.description = value;
                       },
                     ),
                     TextFormField(
                       onTap: () => _selectDate(context),
                       onSaved: (value) {
-                        _task.dueDateTime = _selectedDate;
+                        _task.dueDate = _selectedDate;
                       },
                       controller: _dateController,
                       decoration: InputDecoration(
                         labelText: "Date",
-                        icon: Icon(Icons.calendar_today),
+                        icon: Icon(Icons.event),
                       ),
                       validator: (value) {
                         if (value.isEmpty) {
                           return "Please enter a date for your task";
+                        }
+                        return null;
+                      },
+                    ),
+                    TextFormField(
+                      onTap: () => _selectTime(context),
+                      onSaved: (value) {
+                        _task.dueTime = _selectedTime;
+                      },
+                      controller: _timeController,
+                      decoration: InputDecoration(
+                        labelText: "Time",
+                        icon: Icon(Icons.access_time),
+                      ),
+                      validator: (value) {
+                        if (value.isEmpty) {
+                          return "Please enter a time for your task";
                         }
                         return null;
                       },
