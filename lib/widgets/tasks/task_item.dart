@@ -1,32 +1,34 @@
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 
+import '../../models/task.dart';
 import '../../providers/task_provider.dart';
 import '../../screens/edit_task_screen.dart';
 
 class TaskItem extends StatelessWidget {
-  final String id;
-  final String name;
+  final Task task;
 
-  TaskItem(this.id, this.name);
+  TaskItem(this.task);
 
   void completeTask(BuildContext context) {
     try {
-      Provider.of<TaskProvider>(context, listen: false).completeTask(id);
-      showSnackBar('$name completed.', context);
+      Provider.of<TaskProvider>(context, listen: false).completeTask(task.id);
+      showSnackBar('${task.name} completed.', context);
     } catch (error) {
       showSnackBar('Completing task failed.', context);
     }
   }
 
   void editTask(BuildContext context) {
-    Navigator.of(context).pushNamed(EditTaskScreen.routeName, arguments: id);
+    Navigator.of(context)
+        .pushNamed(EditTaskScreen.routeName, arguments: task.id);
   }
 
   void deleteTask(BuildContext context) {
     try {
-      Provider.of<TaskProvider>(context, listen: false).deleteTask(id);
-      showSnackBar('$name deleted.', context);
+      Provider.of<TaskProvider>(context, listen: false).deleteTask(task.id);
+      showSnackBar('${task.name} deleted.', context);
     } catch (error) {
       showSnackBar('Deletion Failed.', context);
     }
@@ -70,7 +72,7 @@ class TaskItem extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Dismissible(
-      key: ValueKey(id),
+      key: ValueKey(task.id),
       background: Container(
         color: Colors.green,
         child: Icon(Icons.check, color: Colors.white),
@@ -110,39 +112,54 @@ class TaskItem extends StatelessWidget {
             ? completeTask(context)
             : deleteTask(context);
       },
-      child: Card(
-        elevation: 5,
-        child: ListTile(
-          title: Text(name),
-          trailing: Container(
-            width: 150,
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.end,
-              children: [
-                IconButton(
-                  icon: Icon(Icons.check),
-                  onPressed: () {
-                    completeTask(context);
-                  },
-                  color: Colors.green,
+      child: Column(
+        children: [
+          Card(
+            elevation: 5,
+            child: ListTile(
+              title: Text(task.name),
+              subtitle: Text(DateFormat.jm().format(
+                    DateTime(
+                      task.dueDate.year,
+                      task.dueDate.month,
+                      task.dueDate.day,
+                      task.dueTime.hour,
+                      task.dueTime.minute,
+                    ),
+                  ) +
+                  " " +
+                  DateFormat.yMMMd().format(task.dueDate)),
+              trailing: Container(
+                width: 150,
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.end,
+                  children: [
+                    IconButton(
+                      icon: Icon(Icons.check),
+                      onPressed: () {
+                        completeTask(context);
+                      },
+                      color: Colors.green,
+                    ),
+                    IconButton(
+                      icon: Icon(Icons.edit),
+                      onPressed: () {
+                        editTask(context);
+                      },
+                    ),
+                    IconButton(
+                      icon: Icon(Icons.delete),
+                      onPressed: () {
+                        deleteTask(context);
+                      },
+                      color: Theme.of(context).errorColor,
+                    ),
+                  ],
                 ),
-                IconButton(
-                  icon: Icon(Icons.edit),
-                  onPressed: () {
-                    editTask(context);
-                  },
-                ),
-                IconButton(
-                  icon: Icon(Icons.delete),
-                  onPressed: () {
-                    deleteTask(context);
-                  },
-                  color: Theme.of(context).errorColor,
-                ),
-              ],
+              ),
             ),
           ),
-        ),
+        ],
       ),
     );
   }

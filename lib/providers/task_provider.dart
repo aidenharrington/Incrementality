@@ -35,6 +35,7 @@ class TaskProvider with ChangeNotifier {
         null,
       ),
     );
+    _tasks.sort((a, b) => a.dueDate.compareTo(b.dueDate));
     notifyListeners();
   }
 
