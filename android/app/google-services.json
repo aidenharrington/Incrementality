@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "758799178424",
+    "project_id": "incrementality-2a0ee",
+    "storage_bucket": "incrementality-2a0ee.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:758799178424:android:46fb653308d09019fdb24d",
+        "android_client_info": {
+          "package_name": "com.example.incrementality"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "758799178424-jpuunauligoub9ri6dcm4f4khvbh0pap.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCDxCCNfkdXqD7zLhoTK0eLrC_0kP9bklc"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "758799178424-jpuunauligoub9ri6dcm4f4khvbh0pap.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
