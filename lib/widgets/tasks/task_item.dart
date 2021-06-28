@@ -4,7 +4,7 @@ import 'package:provider/provider.dart';
 
 import '../../models/task.dart';
 import '../../providers/task_provider.dart';
-import '../../screens/edit_task_screen.dart';
+import '../../screens/tabs/edit_task_screen.dart';
 
 class TaskItem extends StatelessWidget {
   final Task task;

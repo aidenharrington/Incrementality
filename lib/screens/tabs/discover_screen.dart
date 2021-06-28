@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 
-import '../widgets/navigation_bar.dart';
-import '../widgets/placeholder_widget.dart';
+import '../../widgets/navigation_bar.dart';
+import '../../widgets/placeholder_widget.dart';
 
 class DiscoverScreen extends StatefulWidget {
   static const routeName = '/discover';

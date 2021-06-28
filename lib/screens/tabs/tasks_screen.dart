@@ -2,10 +2,11 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
 import './edit_task_screen.dart';
-import '../widgets/tasks/task_lists.dart';
-import '../widgets/navigation_bar.dart';
+import '../../widgets/tasks/task_lists.dart';
+import '../../widgets/navigation_bar.dart';
 
 class TasksScreen extends StatelessWidget {
+  static const routeName = "/tasks";
   @override
   Widget build(BuildContext context) {
     //final taskProvider = Provider.of<TaskProvider>(context);

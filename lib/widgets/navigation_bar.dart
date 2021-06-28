@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 
-import '../screens/discover_screen.dart';
-import '../screens/fitness_screen.dart';
-import '../screens/profile_screen.dart';
-import '../screens/study_screen.dart';
+import '../screens/tabs/discover_screen.dart';
+import '../screens/tabs/fitness_screen.dart';
+import '../screens/tabs/profile_screen.dart';
+import '../screens/tabs/study_screen.dart';
 
 class NavigationBar extends StatelessWidget {
   List<String> pageRoutes = [
