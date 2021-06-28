@@ -1,39 +1,43 @@
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:incrementality/models/exceptions/auth_exceptions/user_not_found_exception.dart';
 
 import '../models/exceptions/auth_exceptions/auth_exception.dart';
 import '../models/exceptions/auth_exceptions/email_in_use_exception.dart';
 import '../models/exceptions/auth_exceptions/password_too_weak_exception.dart';
-import '../models/authenticated_user.dart';
+import '../models/exceptions/auth_exceptions/user_not_found_exception.dart';
+import '../models/exceptions/auth_exceptions/user_not_verified_exception.dart';
 
 class AuthService {
   final FirebaseAuth _auth = FirebaseAuth.instance;
 
+  Stream<User> get userStream {
+    return _auth.userChanges();
+  }
+
   // sign in with email and password
-  Future<AuthenticatedUser> signIn(String email, String password) async {
+  Future<void> signIn(String email, String password) async {
     try {
-      UserCredential userCredential =
-          await FirebaseAuth.instance.signInWithEmailAndPassword(
+      await FirebaseAuth.instance.signInWithEmailAndPassword(
         email: email,
         password: password,
       );
-      return AuthenticatedUser(uid: 'Placeholder');
     } on FirebaseAuthException catch (e) {
       throw UserNotFoundException();
     } catch (e) {
       throw AuthException();
     }
+    User user = FirebaseAuth.instance.currentUser;
+    if (user != null && !user.emailVerified) {
+      throw UserNotVerifiedException();
+    }
   }
 
   //register with email and password
-  Future<AuthenticatedUser> register(String email, String password) async {
+  Future<void> register(String email, String password) async {
     try {
-      UserCredential userCredential =
-          await FirebaseAuth.instance.createUserWithEmailAndPassword(
+      await FirebaseAuth.instance.createUserWithEmailAndPassword(
         email: email,
         password: password,
       );
-      return AuthenticatedUser(uid: 'Placeholder');
     } on FirebaseAuthException catch (e) {
       if (e.code == 'weak-password') {
         throw PasswordTooWeakException();
@@ -46,5 +50,7 @@ class AuthService {
   }
 
   //sign out
-
+  Future<void> signOut() async {
+    await FirebaseAuth.instance.signOut();
+  }
 }

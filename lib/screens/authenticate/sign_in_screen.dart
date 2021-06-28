@@ -14,15 +14,55 @@ class SignInScreen extends StatelessWidget {
         title: Text('Sign in to IncreMentality'),
         elevation: 0.0,
       ),
-      body: Container(
-        padding: EdgeInsets.symmetric(
-          vertical: 20,
-          horizontal: 50,
-        ),
-        child: TextButton(
-          child: Text('Sign in'),
-          onPressed: () async {},
-        ),
+      body: Row(
+        children: [
+          Container(
+            padding: EdgeInsets.symmetric(
+              vertical: 20,
+              horizontal: 50,
+            ),
+            child: TextButton(
+              style: ButtonStyle(
+                backgroundColor: MaterialStateProperty.resolveWith<Color>(
+                  (Set<MaterialState> states) {
+                    if (states.contains(MaterialState.pressed)) {
+                      return Colors.white;
+                    }
+                    return Theme.of(context).accentColor;
+                  },
+                ),
+              ),
+              child: Text(
+                'Register',
+                style: TextStyle(color: Colors.white),
+              ),
+              onPressed: () async {},
+            ),
+          ),
+          Container(
+            padding: EdgeInsets.symmetric(
+              vertical: 20,
+              horizontal: 50,
+            ),
+            child: TextButton(
+              style: ButtonStyle(
+                backgroundColor: MaterialStateProperty.resolveWith<Color>(
+                  (Set<MaterialState> states) {
+                    if (states.contains(MaterialState.pressed)) {
+                      return Colors.white;
+                    }
+                    return Theme.of(context).accentColor;
+                  },
+                ),
+              ),
+              child: Text(
+                'Sign in',
+                style: TextStyle(color: Colors.white),
+              ),
+              onPressed: () async {},
+            ),
+          ),
+        ],
       ),
     );
   }
