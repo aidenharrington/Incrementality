@@ -36,7 +36,9 @@ class SignInScreen extends StatelessWidget {
                 'Register',
                 style: TextStyle(color: Colors.white),
               ),
-              onPressed: () async {},
+              onPressed: () async {
+                await _auth.register('bob', 'pass');
+              },
             ),
           ),
           Container(

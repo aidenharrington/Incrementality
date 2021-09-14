@@ -27,12 +27,14 @@ class AuthService {
     }
     User user = FirebaseAuth.instance.currentUser;
     if (user != null && !user.emailVerified) {
-      throw UserNotVerifiedException();
+      //throw UserNotVerifiedException();
+      await user.sendEmailVerification();
     }
   }
 
   //register with email and password
   Future<void> register(String email, String password) async {
+    print('email: $email password: $password');
     try {
       await FirebaseAuth.instance.createUserWithEmailAndPassword(
         email: email,
