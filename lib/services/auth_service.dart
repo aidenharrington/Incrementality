@@ -1,4 +1,5 @@
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:flutter/cupertino.dart';
 
 import '../models/exceptions/auth_exceptions/auth_exception.dart';
 import '../models/exceptions/auth_exceptions/email_in_use_exception.dart';
@@ -6,11 +7,12 @@ import '../models/exceptions/auth_exceptions/password_too_weak_exception.dart';
 import '../models/exceptions/auth_exceptions/user_not_found_exception.dart';
 import '../models/exceptions/auth_exceptions/user_not_verified_exception.dart';
 
-class AuthService {
-  final FirebaseAuth _auth = FirebaseAuth.instance;
+class AuthService with ChangeNotifier {
+  User _user;
 
-  Stream<User> get userStream {
-    return _auth.userChanges();
+  bool get isAuthenticated {
+    print(_user);
+    return _user != null;
   }
 
   // sign in with email and password
@@ -27,9 +29,13 @@ class AuthService {
     }
     User user = FirebaseAuth.instance.currentUser;
     if (user != null && !user.emailVerified) {
-      //throw UserNotVerifiedException();
       await user.sendEmailVerification();
+      throw UserNotVerifiedException();
+    } else {
+      print('Signed in...');
+      _user = user;
     }
+    notifyListeners();
   }
 
   //register with email and password
@@ -40,19 +46,23 @@ class AuthService {
         email: email,
         password: password,
       );
+      await FirebaseAuth.instance.currentUser.sendEmailVerification();
+      notifyListeners();
     } on FirebaseAuthException catch (e) {
-      if (e.code == 'weak-password') {
-        throw PasswordTooWeakException();
-      } else if (e.code == 'email-already-in-use') {
+      if (e.code == 'email-already-in-use') {
         throw EmailInUseException();
+      } else if (e.code == 'weak-password') {
+        throw PasswordTooWeakException();
       }
     } catch (e) {
       throw AuthException();
     }
+    notifyListeners();
   }
 
   //sign out
   Future<void> signOut() async {
     await FirebaseAuth.instance.signOut();
+    notifyListeners();
   }
 }

@@ -1,1 +1,5 @@
-class AuthException implements Exception {}
+class AuthException implements Exception {
+  String get message {
+    return 'Auth Exception';
+  }
+}
