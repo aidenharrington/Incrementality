@@ -7,11 +7,10 @@ import '../models/exceptions/auth_exceptions/password_too_weak_exception.dart';
 import '../models/exceptions/auth_exceptions/user_not_found_exception.dart';
 import '../models/exceptions/auth_exceptions/user_not_verified_exception.dart';
 
-class AuthService with ChangeNotifier {
+class AuthProvider with ChangeNotifier {
   User _user;
 
   bool get isAuthenticated {
-    print(_user);
     return _user != null;
   }
 
@@ -39,7 +38,7 @@ class AuthService with ChangeNotifier {
   }
 
   //register with email and password
-  Future<void> register(String email, String password) async {
+  Future<bool> register(String email, String password) async {
     print('email: $email password: $password');
     try {
       await FirebaseAuth.instance.createUserWithEmailAndPassword(
@@ -58,6 +57,7 @@ class AuthService with ChangeNotifier {
       throw AuthException();
     }
     notifyListeners();
+    return true;
   }
 
   //sign out

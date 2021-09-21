@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
-import 'package:incrementality/screens/authenticate/sign_in_screen.dart';
-import 'package:incrementality/services/auth_service.dart';
+import 'package:incrementality/screens/sign_in_screen.dart';
+import 'package:incrementality/providers/auth_provider.dart';
 import 'package:provider/provider.dart';
 
 import './helpers/fade_route.dart';
@@ -41,13 +41,13 @@ class _MyAppState extends State<MyApp> {
           return MultiProvider(
             providers: [
               ChangeNotifierProvider(
-                create: (ctx) => AuthService(),
+                create: (ctx) => AuthProvider(),
               ),
               ChangeNotifierProvider(
                 create: (ctx) => TaskProvider(),
               ),
             ],
-            child: Consumer<AuthService>(
+            child: Consumer<AuthProvider>(
               builder: (ctx, auth, _) => MaterialApp(
                 title: 'Flutter Demo',
                 theme: ThemeData(

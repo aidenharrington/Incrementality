@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:incrementality/models/exceptions/auth_exceptions/auth_exception.dart';
 import 'package:provider/provider.dart';
 
-import '../../services/auth_service.dart';
+import '../providers/auth_provider.dart';
 
 class SignInScreen extends StatefulWidget {
   @override
@@ -45,6 +45,8 @@ class _SignInScreenState extends State<SignInScreen> {
   void _toggleRegistrationMode() {
     setState(() {
       _registrationMode = !_registrationMode;
+      _passwordController.clear();
+      _confirmPasswordController.clear();
     });
   }
 
@@ -75,9 +77,40 @@ class _SignInScreenState extends State<SignInScreen> {
     );
   }
 
+  Future<void> _showRegisteredAlert(bool registered) async {
+    return showDialog<void>(
+      context: context,
+      barrierDismissible: false,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: Text('Registration Status'),
+          content: SingleChildScrollView(
+            child: ListBody(
+              children: <Widget>[
+                registered
+                    ? Text(
+                        'You have been successfully registered, please confirm email to continue')
+                    : Text('Error registering account'),
+              ],
+            ),
+          ),
+          actions: <Widget>[
+            TextButton(
+              child: const Text('Okay'),
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+            ),
+          ],
+        );
+      },
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
-    final AuthService _auth = Provider.of<AuthService>(context, listen: false);
+    final AuthProvider _auth =
+        Provider.of<AuthProvider>(context, listen: false);
     return Scaffold(
       backgroundColor: Colors.white,
       appBar: AppBar(
@@ -94,6 +127,7 @@ class _SignInScreenState extends State<SignInScreen> {
               validator: (value) => _emptyFieldValidator(value, 'username'),
             ),
             TextFormField(
+              //TODO: obfuscate
               controller: _passwordController,
               validator: (value) => _emptyFieldValidator(value, 'password'),
             ),
@@ -101,12 +135,13 @@ class _SignInScreenState extends State<SignInScreen> {
                 ? Column(
                     children: [
                       TextFormField(
+                        //TODO: obfuscate
                         controller: _confirmPasswordController,
                         validator: (value) => _confimPasswordValidator(value),
                       ),
                       TextButton(
                         onPressed: _toggleRegistrationMode,
-                        child: Text(_registerText),
+                        child: Text(_signInText),
                       ),
                       Container(
                         padding: EdgeInsets.symmetric(
@@ -132,10 +167,11 @@ class _SignInScreenState extends State<SignInScreen> {
                           onPressed: () async {
                             if (_formKey.currentState.validate()) {
                               try {
-                                await _auth.register(
+                                bool registered = await _auth.register(
                                   _usernameController.text,
                                   _passwordController.text,
                                 );
+                                _showRegisteredAlert(registered);
                               } on AuthException catch (e) {
                                 await _showErrorAlert(
                                     _registrationErrorTitle, e.message);
@@ -153,7 +189,7 @@ class _SignInScreenState extends State<SignInScreen> {
                     children: [
                       TextButton(
                         onPressed: _toggleRegistrationMode,
-                        child: Text(_signInText),
+                        child: Text(_registerText),
                       ),
                       Container(
                         padding: EdgeInsets.symmetric(
