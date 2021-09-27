@@ -8,7 +8,16 @@ import '../models/exceptions/auth_exceptions/user_not_found_exception.dart';
 import '../models/exceptions/auth_exceptions/user_not_verified_exception.dart';
 
 class AuthProvider with ChangeNotifier {
-  User _user;
+  FirebaseAuth firebaseAuth;
+
+  late User? _user;
+  bool authenticated = false;
+
+  AuthProvider(this.firebaseAuth);
+
+  User? get user {
+    return _user;
+  }
 
   bool get isAuthenticated {
     return _user != null;
@@ -17,7 +26,7 @@ class AuthProvider with ChangeNotifier {
   // sign in with email and password
   Future<void> signIn(String email, String password) async {
     try {
-      await FirebaseAuth.instance.signInWithEmailAndPassword(
+      await firebaseAuth.signInWithEmailAndPassword(
         email: email,
         password: password,
       );
@@ -26,7 +35,7 @@ class AuthProvider with ChangeNotifier {
     } catch (e) {
       throw AuthException();
     }
-    User user = FirebaseAuth.instance.currentUser;
+    User? user = firebaseAuth.currentUser;
     if (user != null && !user.emailVerified) {
       await user.sendEmailVerification();
       throw UserNotVerifiedException();
@@ -41,11 +50,11 @@ class AuthProvider with ChangeNotifier {
   Future<bool> register(String email, String password) async {
     print('email: $email password: $password');
     try {
-      await FirebaseAuth.instance.createUserWithEmailAndPassword(
+      await firebaseAuth.createUserWithEmailAndPassword(
         email: email,
         password: password,
       );
-      await FirebaseAuth.instance.currentUser.sendEmailVerification();
+      await firebaseAuth.currentUser?.sendEmailVerification();
       notifyListeners();
     } on FirebaseAuthException catch (e) {
       if (e.code == 'email-already-in-use') {
@@ -62,7 +71,7 @@ class AuthProvider with ChangeNotifier {
 
   //sign out
   Future<void> signOut() async {
-    await FirebaseAuth.instance.signOut();
+    await firebaseAuth.signOut();
     notifyListeners();
   }
 }

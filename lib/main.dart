@@ -1,3 +1,4 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:incrementality/screens/sign_in_screen.dart';
@@ -37,11 +38,14 @@ class _MyAppState extends State<MyApp> {
           return ErrorScreen();
         }
 
-        if (snapshot.connectionState == ConnectionState.done) {
+        if (snapshot.connectionState == ConnectionState.done &&
+            snapshot.hasData) {
+          FirebaseApp app = snapshot.data as FirebaseApp;
+          final FirebaseAuth firebaseAuth = FirebaseAuth.instanceFor(app: app);
           return MultiProvider(
             providers: [
               ChangeNotifierProvider(
-                create: (ctx) => AuthProvider(),
+                create: (ctx) => AuthProvider(firebaseAuth),
               ),
               ChangeNotifierProvider(
                 create: (ctx) => TaskProvider(),
