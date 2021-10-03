@@ -2,8 +2,8 @@ import 'package:flutter/material.dart';
 
 class FadeRoute<T> extends MaterialPageRoute<T> {
   FadeRoute({
-    WidgetBuilder builder,
-    RouteSettings settings,
+    required WidgetBuilder builder,
+    required RouteSettings settings,
   }) : super(
           builder: builder,
           settings: settings,

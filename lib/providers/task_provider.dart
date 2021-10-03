@@ -1,4 +1,5 @@
 import 'package:flutter/foundation.dart';
+import 'package:flutter/material.dart';
 
 import '../models/task.dart';
 
@@ -24,17 +25,7 @@ class TaskProvider with ChangeNotifier {
   }
 
   void addTask(Task task) {
-    _tasks.add(
-      Task(
-        DateTime.now().toString(),
-        task.name,
-        DateTime.now(),
-        task.description,
-        task.dueDate,
-        task.dueTime,
-        null,
-      ),
-    );
+    _tasks.add(task);
     _tasks.sort((a, b) => a.dueDate.compareTo(b.dueDate));
     notifyListeners();
   }

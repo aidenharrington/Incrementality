@@ -44,9 +44,9 @@ class TaskItem extends StatelessWidget {
     );
   }
 
-  Future<bool> showCustomAlertDialog(
+  Future<bool?> showCustomAlertDialog(
       String title, String content, BuildContext context) {
-    return showDialog(
+    return showDialog<bool?>(
       context: context,
       builder: (ctx) => AlertDialog(
         title: Text(title),

@@ -11,13 +11,14 @@ void main() {
   //isAuthenticated
   test(
       'Given a firebase instance with no users When isAutenticated is called Then return false',
-      () async {
-    final mockAuth = FirebaseAuthMock();
-    when(mockAuth.signInWithEmailAndPassword(email: '', password: ''))
-        .thenAnswer((realInvocation) => Future.value(''));
-  });
+      () async {});
 
   //sign in good
+  test('', () async {
+    // final mockAuth = FirebaseAuthMock();
+    // when(mockAuth.signInWithEmailAndPassword(email: '', password: ''))
+    //     .thenAnswer((realInvocation) => Future.value(''));
+  });
 
   //sign in no user
 

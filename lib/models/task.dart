@@ -4,18 +4,18 @@ class Task {
   final String id;
   String name;
   DateTime createdAt;
-  String description;
   DateTime dueDate;
   TimeOfDay dueTime;
-  DateTime completedAt;
+  String? description;
+  DateTime? completedAt;
 
   Task(
     this.id,
     this.name,
-    this.createdAt, [
-    this.description,
+    this.createdAt,
     this.dueDate,
-    this.dueTime,
+    this.dueTime, [
+    this.description,
     this.completedAt,
   ]);
 }

@@ -20,7 +20,7 @@ class AuthProvider with ChangeNotifier {
   }
 
   bool get isAuthenticated {
-    return _user != null;
+    return authenticated;
   }
 
   // sign in with email and password
@@ -42,6 +42,7 @@ class AuthProvider with ChangeNotifier {
     } else {
       print('Signed in...');
       _user = user;
+      authenticated = true;
     }
     notifyListeners();
   }
@@ -72,6 +73,7 @@ class AuthProvider with ChangeNotifier {
   //sign out
   Future<void> signOut() async {
     await firebaseAuth.signOut();
+    authenticated = false;
     notifyListeners();
   }
 }

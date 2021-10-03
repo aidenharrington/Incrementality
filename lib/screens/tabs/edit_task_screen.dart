@@ -18,29 +18,18 @@ class _EditTaskScreenState extends State<EditTaskScreen> {
   TextEditingController _timeController = TextEditingController();
   DateTime _selectedDate = DateTime.now();
   TimeOfDay _selectedTime = TimeOfDay.now();
-  var _task = Task(
-    null,
-    '',
-    null,
-    null,
-    null,
-    null,
-  );
-  var _initValues = {
-    'name': '',
-    'description': '',
-    'dueDate': DateTime.now(),
-    'dueTime': TimeOfDay.now(),
-  };
+  late Task _task;
   var _isInit = true;
   var _isLoading = false;
+  bool _isNewTask = true;
 
   void _saveForm() {
-    if (!_form.currentState.validate()) {
+    bool? valid = _form.currentState?.validate();
+    if (valid == null || !valid) {
       return;
     }
-    _form.currentState.save();
-    if (_task.id != null) {
+    _form.currentState?.save();
+    if (!_isNewTask) {
       Provider.of<TaskProvider>(context, listen: false)
           .updateTask(_task.id, _task);
     } else {
@@ -56,26 +45,30 @@ class _EditTaskScreenState extends State<EditTaskScreen> {
       setState(() {
         _isLoading = true;
       });
-      final taskId = ModalRoute.of(context).settings.arguments as String;
-      if (taskId != null) {
+      final String? taskId =
+          ModalRoute.of(context)?.settings.arguments as String?;
+      if (taskId != null && taskId.isNotEmpty) {
         try {
           _task = Provider.of<TaskProvider>(context, listen: false)
               .findTaskById(taskId);
-          _initValues = {
-            'name': _task.name,
-            'description': _task.description,
-            'dueDate': _formatDate(_task.dueDate),
-            'dueTime': _formatTime(_task.dueTime),
-            // 'dueDate': _task.dueDate,
-            // 'dueTime': _task.dueTime,
-          };
           setState(() {
-            _dateController.text = _initValues['dueDate'];
-            _timeController.text = _initValues['dueTime'];
+            _isNewTask = false;
+            _dateController.text = _formatDate(_task.dueDate);
+            _timeController.text = _formatTime(_task.dueTime);
           });
         } catch (error) {
           print(error);
         }
+      } else {
+        setState(() {
+          _task = Task(
+            DateTime.now().toString(),
+            '',
+            DateTime.now(),
+            DateTime.now(),
+            TimeOfDay.now(),
+          );
+        });
       }
     }
     setState(() {
@@ -86,7 +79,7 @@ class _EditTaskScreenState extends State<EditTaskScreen> {
   }
 
   void _selectDate(BuildContext context) async {
-    final DateTime picked = await showDatePicker(
+    final DateTime? picked = await showDatePicker(
       context: context,
       initialDate: _selectedDate,
       firstDate: DateTime.now(),
@@ -101,7 +94,7 @@ class _EditTaskScreenState extends State<EditTaskScreen> {
   }
 
   void _selectTime(BuildContext context) async {
-    final TimeOfDay picked = await showTimePicker(
+    final TimeOfDay? picked = await showTimePicker(
       context: context,
       initialTime: _selectedTime,
       initialEntryMode: TimePickerEntryMode.input,
@@ -134,7 +127,7 @@ class _EditTaskScreenState extends State<EditTaskScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text(_initValues['name']),
+        title: Text(_task.name),
         actions: [
           IconButton(
             icon: Icon(Icons.save),
@@ -153,21 +146,21 @@ class _EditTaskScreenState extends State<EditTaskScreen> {
                 child: ListView(
                   children: [
                     TextFormField(
-                      initialValue: _initValues['name'],
+                      initialValue: _task.name,
                       decoration: InputDecoration(labelText: 'Name'),
                       textInputAction: TextInputAction.next,
                       validator: (value) {
-                        if (value.isEmpty) {
+                        if (value == null || value.isEmpty) {
                           return 'Please provide a value.';
                         }
                         return null;
                       },
                       onSaved: (value) {
-                        _task.name = value;
+                        _task.name = value as String;
                       },
                     ),
                     TextFormField(
-                      initialValue: _initValues['description'],
+                      initialValue: _task.description,
                       decoration: InputDecoration(labelText: 'Description'),
                       textInputAction: TextInputAction.next,
                       maxLines: 3,
@@ -187,7 +180,7 @@ class _EditTaskScreenState extends State<EditTaskScreen> {
                         icon: Icon(Icons.event),
                       ),
                       validator: (value) {
-                        if (value.isEmpty) {
+                        if (value == null || value.isEmpty) {
                           return "Please enter a date for your task";
                         }
                         return null;
@@ -204,7 +197,7 @@ class _EditTaskScreenState extends State<EditTaskScreen> {
                         icon: Icon(Icons.access_time),
                       ),
                       validator: (value) {
-                        if (value.isEmpty) {
+                        if (value == null || value.isEmpty) {
                           return "Please enter a time for your task";
                         }
                         return null;

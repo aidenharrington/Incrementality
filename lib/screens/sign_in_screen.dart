@@ -22,15 +22,15 @@ class _SignInScreenState extends State<SignInScreen> {
 
   bool _registrationMode = false;
 
-  String _emptyFieldValidator(String value, String field) {
+  String? _emptyFieldValidator(String? value, String field) {
     if (value == null || value.isEmpty) {
       return 'Please enter a $field';
     }
     return null;
   }
 
-  String _confimPasswordValidator(String value) {
-    String emptyValidator =
+  String? _confimPasswordValidator(String? value) {
+    String? emptyValidator =
         _emptyFieldValidator(value, 'confirmation password');
     if (emptyValidator != null) {
       return emptyValidator;
@@ -39,7 +39,7 @@ class _SignInScreenState extends State<SignInScreen> {
         _passwordController.text != _confirmPasswordController.text) {
       return 'Passwords must match.';
     }
-    return null;
+    return '';
   }
 
   void _toggleRegistrationMode() {
@@ -165,7 +165,7 @@ class _SignInScreenState extends State<SignInScreen> {
                             style: TextStyle(color: Colors.white),
                           ),
                           onPressed: () async {
-                            if (_formKey.currentState.validate()) {
+                            if (_formKey.currentState?.validate() != null) {
                               try {
                                 bool registered = await _auth.register(
                                   _usernameController.text,
@@ -213,7 +213,7 @@ class _SignInScreenState extends State<SignInScreen> {
                             style: TextStyle(color: Colors.white),
                           ),
                           onPressed: () async {
-                            if (_formKey.currentState.validate()) {
+                            if (_formKey.currentState?.validate() != null) {
                               try {
                                 await _auth.signIn(
                                   _usernameController.text,
