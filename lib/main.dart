@@ -47,8 +47,15 @@ class _MyAppState extends State<MyApp> {
               ChangeNotifierProvider(
                 create: (ctx) => AuthProvider(firebaseAuth),
               ),
-              ChangeNotifierProvider(
-                create: (ctx) => TaskProvider(),
+              ChangeNotifierProxyProvider<AuthProvider, TaskProvider>(
+                create: (_) => TaskProvider(),
+                update: (_, authProvider, myNotifier) {
+                  if (myNotifier != null) {
+                    return myNotifier..update(authProvider.user);
+                  } else {
+                    return TaskProvider();
+                  }
+                },
               ),
             ],
             child: Consumer<AuthProvider>(

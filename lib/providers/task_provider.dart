@@ -1,11 +1,26 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_core/firebase_core.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 
 import '../models/task.dart';
 
 class TaskProvider with ChangeNotifier {
   List<Task> _tasks = [];
   List<Task> _completedTasks = [];
+
+  void update(User? user) {
+    final String? uid = user?.uid;
+    if (uid != null) {
+      CollectionReference tasks = FirebaseFirestore.instance
+          .collection('users')
+          .doc(uid)
+          .collection('tasks');
+
+      //change to a snapshot
+    }
+  }
 
   List<Task> get tasks {
     return [..._tasks];
@@ -16,12 +31,10 @@ class TaskProvider with ChangeNotifier {
   }
 
   Task findTaskById(String id) {
-    final task = _tasks.firstWhere((task) => task.id == id);
-    if (task != null) {
-      return task;
-    } else {
-      throw Exception();
-    }
+    return _tasks.firstWhere(
+      (task) => task.id == id,
+      orElse: () => throw Exception,
+    );
   }
 
   void addTask(Task task) {
