@@ -3,7 +3,7 @@ import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 
 import '../../models/task.dart';
-import '../../providers/task_provider.dart';
+import '../../services/providers/task_provider.dart';
 import '../../screens/tabs/edit_task_screen.dart';
 
 class TaskItem extends StatelessWidget {

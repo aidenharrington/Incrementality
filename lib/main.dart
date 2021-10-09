@@ -2,11 +2,12 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:incrementality/screens/sign_in_screen.dart';
-import 'package:incrementality/providers/auth_provider.dart';
+import 'package:incrementality/services/firebase_auth_service.dart';
+import 'package:incrementality/services/providers/deprecated_auth_provider.dart';
 import 'package:provider/provider.dart';
 
 import './helpers/fade_route.dart';
-import './providers/task_provider.dart';
+import 'services/providers/task_provider.dart';
 import 'screens/tabs/discover_screen.dart';
 import 'screens/tabs/edit_task_screen.dart';
 import 'screens/tabs/fitness_screen.dart';
@@ -40,12 +41,13 @@ class _MyAppState extends State<MyApp> {
 
         if (snapshot.connectionState == ConnectionState.done &&
             snapshot.hasData) {
-          FirebaseApp app = snapshot.data as FirebaseApp;
-          final FirebaseAuth firebaseAuth = FirebaseAuth.instanceFor(app: app);
           return MultiProvider(
             providers: [
-              ChangeNotifierProvider(
-                create: (ctx) => AuthProvider(firebaseAuth),
+              Provider(create: (_) => FirebaseAuthService()),
+              StreamProvider(
+                create: (context) =>
+                    context.read<FirebaseAuthService>().onAuthStateChanged,
+                initialData: null,
               ),
               ChangeNotifierProxyProvider<AuthProvider, TaskProvider>(
                 create: (_) => TaskProvider(),

@@ -1,6 +1,6 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:test/test.dart';
-import 'package:incrementality/providers/auth_provider.dart';
+import 'package:incrementality/services/providers/deprecated_auth_provider.dart';
 import 'package:mockito/mockito.dart';
 
 class FirebaseAuthMock extends Mock implements FirebaseAuth {}

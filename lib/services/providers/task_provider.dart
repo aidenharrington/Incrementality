@@ -4,7 +4,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 
-import '../models/task.dart';
+import '../../models/task.dart';
 
 class TaskProvider with ChangeNotifier {
   List<Task> _tasks = [];

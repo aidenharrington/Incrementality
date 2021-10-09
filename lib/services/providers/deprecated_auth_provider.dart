@@ -1,11 +1,11 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 
-import '../models/exceptions/auth_exceptions/auth_exception.dart';
-import '../models/exceptions/auth_exceptions/email_in_use_exception.dart';
-import '../models/exceptions/auth_exceptions/password_too_weak_exception.dart';
-import '../models/exceptions/auth_exceptions/user_not_found_exception.dart';
-import '../models/exceptions/auth_exceptions/user_not_verified_exception.dart';
+import '../../models/exceptions/auth_exceptions/auth_exception.dart';
+import '../../models/exceptions/auth_exceptions/email_in_use_exception.dart';
+import '../../models/exceptions/auth_exceptions/password_too_weak_exception.dart';
+import '../../models/exceptions/auth_exceptions/user_not_found_exception.dart';
+import '../../models/exceptions/auth_exceptions/user_not_verified_exception.dart';
 
 class AuthProvider with ChangeNotifier {
   FirebaseAuth firebaseAuth;

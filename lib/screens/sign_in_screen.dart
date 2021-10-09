@@ -1,8 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:incrementality/models/exceptions/auth_exceptions/auth_exception.dart';
+import 'package:incrementality/services/firebase_auth_service.dart';
 import 'package:provider/provider.dart';
 
-import '../providers/auth_provider.dart';
+import '../services/providers/deprecated_auth_provider.dart';
 
 class SignInScreen extends StatefulWidget {
   @override
@@ -77,7 +78,7 @@ class _SignInScreenState extends State<SignInScreen> {
     );
   }
 
-  Future<void> _showRegisteredAlert(bool registered) async {
+  Future<void> _showRegisteredAlert() async {
     return showDialog<void>(
       context: context,
       barrierDismissible: false,
@@ -87,10 +88,8 @@ class _SignInScreenState extends State<SignInScreen> {
           content: SingleChildScrollView(
             child: ListBody(
               children: <Widget>[
-                registered
-                    ? Text(
-                        'You have been successfully registered, please confirm email to continue')
-                    : Text('Error registering account'),
+                Text(
+                    'You have been successfully registered, please confirm email to continue')
               ],
             ),
           ),
@@ -109,8 +108,6 @@ class _SignInScreenState extends State<SignInScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final AuthProvider _auth =
-        Provider.of<AuthProvider>(context, listen: false);
     return Scaffold(
       backgroundColor: Colors.white,
       appBar: AppBar(
@@ -167,11 +164,13 @@ class _SignInScreenState extends State<SignInScreen> {
                           onPressed: () async {
                             if (_formKey.currentState?.validate() != null) {
                               try {
-                                bool registered = await _auth.register(
-                                  _usernameController.text,
-                                  _passwordController.text,
-                                );
-                                _showRegisteredAlert(registered);
+                                await context
+                                    .read<FirebaseAuthService>()
+                                    .register(
+                                      _usernameController.text,
+                                      _passwordController.text,
+                                    );
+                                _showRegisteredAlert();
                               } on AuthException catch (e) {
                                 await _showErrorAlert(
                                     _registrationErrorTitle, e.message);
@@ -215,10 +214,12 @@ class _SignInScreenState extends State<SignInScreen> {
                           onPressed: () async {
                             if (_formKey.currentState?.validate() != null) {
                               try {
-                                await _auth.signIn(
-                                  _usernameController.text,
-                                  _passwordController.text,
-                                );
+                                await context
+                                    .read<FirebaseAuthService>()
+                                    .signInWithEmail(
+                                      _usernameController.text,
+                                      _passwordController.text,
+                                    );
                               } on AuthException catch (e) {
                                 await _showErrorAlert(
                                     _signInErrorTitle, e.message);

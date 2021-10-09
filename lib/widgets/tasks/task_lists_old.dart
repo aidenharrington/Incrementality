@@ -1,4 +1,3 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
@@ -13,8 +12,6 @@ class TasksList extends StatefulWidget {
 }
 
 class _TasksListState extends State<TasksList> {
-  //final Stream<QuerySnapshot> _usersStream =
-
   bool _newDate(List<Task> tasks, int index) {
     if (index > 0) {
       if (tasks[index].dueDate != tasks[index - 1].dueDate) {

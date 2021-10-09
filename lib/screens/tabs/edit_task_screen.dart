@@ -3,7 +3,7 @@ import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 
 import '../../models/task.dart';
-import '../../providers/task_provider.dart';
+import '../../services/providers/task_provider.dart';
 
 class EditTaskScreen extends StatefulWidget {
   static const routeName = '/edit-task-screen';
