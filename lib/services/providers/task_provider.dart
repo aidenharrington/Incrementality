@@ -4,26 +4,39 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 
+import '../../models/app_user.dart';
 import '../../models/task.dart';
 
 class TaskProvider with ChangeNotifier {
+  late FirebaseFirestore _firebaseFirestore;
+  late Stream<QuerySnapshot> _tasksStream;
+
   List<Task> _tasks = [];
   List<Task> _completedTasks = [];
 
-  void update(User? user) {
+  void update(AppUser? user, {FirebaseFirestore? firebaseFirestore}) {
     final String? uid = user?.uid;
     if (uid != null) {
-      CollectionReference tasks = FirebaseFirestore.instance
+      firebaseFirestore != null
+          ? _firebaseFirestore = firebaseFirestore
+          : _firebaseFirestore = FirebaseFirestore.instance;
+
+      _tasksStream = _firebaseFirestore
           .collection('users')
           .doc(uid)
-          .collection('tasks');
-
-      //change to a snapshot
+          .collection('tasks')
+          .snapshots();
     }
   }
 
-  List<Task> get tasks {
-    return [..._tasks];
+  Stream<QuerySnapshot> get tasksStream {
+    return _tasksStream;
+  }
+
+  Future<List<Task>> get tasks {
+    //get tasks
+
+    //TODO think of way of handling completed and deleted tasks
   }
 
   int get taskCount {

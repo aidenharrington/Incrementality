@@ -7,10 +7,10 @@ import '../../models/exceptions/auth_exceptions/password_too_weak_exception.dart
 import '../../models/exceptions/auth_exceptions/user_not_found_exception.dart';
 import '../../models/exceptions/auth_exceptions/user_not_verified_exception.dart';
 
-class FirebaseAuthService {
+class dep_FirebaseAuthService {
   FirebaseAuth _firebaseAuth;
 
-  FirebaseAuthService({FirebaseAuth? firebaseAuth})
+  dep_FirebaseAuthService({FirebaseAuth? firebaseAuth})
       : _firebaseAuth =
             firebaseAuth != null ? firebaseAuth : FirebaseAuth.instance;
 

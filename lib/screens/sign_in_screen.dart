@@ -1,9 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:incrementality/models/exceptions/auth_exceptions/auth_exception.dart';
-import 'package:incrementality/services/firebase_auth_service.dart';
 import 'package:provider/provider.dart';
-
-import '../services/providers/deprecated_auth_provider.dart';
+import 'package:incrementality/services/providers/auth_provider.dart';
 
 class SignInScreen extends StatefulWidget {
   @override
@@ -164,9 +162,7 @@ class _SignInScreenState extends State<SignInScreen> {
                           onPressed: () async {
                             if (_formKey.currentState?.validate() != null) {
                               try {
-                                await context
-                                    .read<FirebaseAuthService>()
-                                    .register(
+                                await context.read<AuthProvider>().register(
                                       _usernameController.text,
                                       _passwordController.text,
                                     );
@@ -214,9 +210,7 @@ class _SignInScreenState extends State<SignInScreen> {
                           onPressed: () async {
                             if (_formKey.currentState?.validate() != null) {
                               try {
-                                await context
-                                    .read<FirebaseAuthService>()
-                                    .signInWithEmail(
+                                await context.read<AuthProvider>().signIn(
                                       _usernameController.text,
                                       _passwordController.text,
                                     );

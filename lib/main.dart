@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:incrementality/screens/sign_in_screen.dart';
 import 'package:incrementality/services/firebase_auth_service.dart';
-import 'package:incrementality/services/providers/deprecated_auth_provider.dart';
+import 'package:incrementality/services/providers/auth_provider.dart';
 import 'package:provider/provider.dart';
 
 import './helpers/fade_route.dart';
@@ -43,12 +43,7 @@ class _MyAppState extends State<MyApp> {
             snapshot.hasData) {
           return MultiProvider(
             providers: [
-              Provider(create: (_) => FirebaseAuthService()),
-              StreamProvider(
-                create: (context) =>
-                    context.read<FirebaseAuthService>().onAuthStateChanged,
-                initialData: null,
-              ),
+              ChangeNotifierProvider(create: (ctx) => AuthProvider()),
               ChangeNotifierProxyProvider<AuthProvider, TaskProvider>(
                 create: (_) => TaskProvider(),
                 update: (_, authProvider, myNotifier) {

@@ -13,8 +13,6 @@ class TasksList extends StatefulWidget {
 }
 
 class _TasksListState extends State<TasksList> {
-  //final Stream<QuerySnapshot> _usersStream =
-
   bool _newDate(List<Task> tasks, int index) {
     if (index > 0) {
       if (tasks[index].dueDate != tasks[index - 1].dueDate) {
@@ -46,25 +44,31 @@ class _TasksListState extends State<TasksList> {
 
   @override
   Widget build(BuildContext context) {
-    final tasks = Provider.of<TaskProvider>(context).tasks;
-    return tasks.isEmpty
-        ? Container(
-            child: Center(
-              child: Text(
-                'No tasks yet.',
-                style: TextStyle(
-                  fontSize: 40,
-                  fontWeight: FontWeight.bold,
-                ),
-              ),
-            ),
-          )
-        : ListView.builder(
-            itemCount: tasks.length,
-            itemBuilder: (ctx, i) {
-              return _newDate(tasks, i)
-                  ? _showDateAndWidget(tasks[i])
-                  : TaskItem(tasks[i]);
-            });
+    TaskProvider taskProvider = Provider.of<TaskProvider>(context);
+    Stream<QuerySnapshot> tasksStream = taskProvider.tasksStream;
+
+    return StreamBuilder(
+      stream: tasksStream,
+      builder: (BuildContext context, AsyncSnapshot<QuerySnapshot> snapshot) {
+        if (snapshot.hasError) {
+          return Text('Something went wrong');
+        }
+
+        if (snapshot.connectionState == ConnectionState.waiting) {
+          return Text("Loading");
+        }
+
+        return ListView(
+          children: snapshot.data!.docs.map((DocumentSnapshot document) {
+            Map<String, dynamic> data =
+                document.data()! as Map<String, dynamic>;
+            return ListTile(
+              title: Text(data['full_name']),
+              subtitle: Text(data['company']),
+            );
+          }).toList(),
+        );
+      },
+    );
   }
 }
