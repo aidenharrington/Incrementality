@@ -22,24 +22,24 @@ class _EditTaskScreenState extends State<EditTaskScreen> {
   var _isLoading = false;
   bool _isNewTask = true;
 
-  void _saveForm() {
+  Future<void> _saveForm() async {
     bool? valid = _form.currentState?.validate();
     if (valid == null || !valid) {
       return;
     }
     _form.currentState?.save();
     if (!_isNewTask) {
-      Provider.of<TaskProvider>(context, listen: false)
+      await Provider.of<TaskProvider>(context, listen: false)
           .updateTask(_task.id, _task);
     } else {
       _task.createdAt = DateTime.now();
-      Provider.of<TaskProvider>(context, listen: false).addTask(_task);
+      await Provider.of<TaskProvider>(context, listen: false).addTask(_task);
     }
     Navigator.of(context).pop();
   }
 
   @override
-  void didChangeDependencies() {
+  void didChangeDependencies() async {
     if (_isInit) {
       setState(() {
         _isLoading = true;
@@ -48,8 +48,8 @@ class _EditTaskScreenState extends State<EditTaskScreen> {
           ModalRoute.of(context)?.settings.arguments as String?;
       if (taskId != null && taskId.isNotEmpty) {
         try {
-          _task = Provider.of<TaskProvider>(context, listen: false)
-              .findTaskById(taskId);
+          _task = await Provider.of<TaskProvider>(context, listen: false)
+              .getTaskById(taskId);
           setState(() {
             _isNewTask = false;
             _dateController.text = _formatDate(_task.dueDate);

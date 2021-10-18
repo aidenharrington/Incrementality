@@ -37,7 +37,8 @@ class TaskProvider with ChangeNotifier {
         .collection('users')
         .doc(_uid)
         .collection('tasks')
-        .where('completedAt', isNull: false)
+        .where('completedAt', isNull: true)
+        .orderBy('dueDate', descending: true)
         .get();
 
     //TODO sort by date
@@ -52,16 +53,7 @@ class TaskProvider with ChangeNotifier {
 
     for (var doc in taskDocs) {
       if (doc.data() != null) {
-        var data = doc.data() as Map<String, dynamic>;
-        String id = data['id'];
-        String name = data['name'];
-        DateTime createdAt = data['createdAt'];
-        DateTime dueDate = data['dueDate'];
-        String? description = data['description'];
-        DateTime? completedAt = data['completedAt'];
-
-        Task task =
-            Task(id, name, createdAt, dueDate, description, completedAt);
+        Task task = formatTask(doc);
         tasks.add(task);
       }
     }
@@ -69,39 +61,94 @@ class TaskProvider with ChangeNotifier {
     return tasks;
   }
 
+  Task formatTask(DocumentSnapshot doc) {
+    var data = doc.data() as Map<String, dynamic>;
+    String id = data['id'];
+    String name = data['name'];
+    DateTime createdAt = timeStampToDateTime(data['createdAt']);
+    DateTime dueDate = timeStampToDateTime(data['dueDate']);
+    String? description = data['description'];
+    DateTime? completedAt = data['completedAt'] != null
+        ? timeStampToDateTime(data['completedAt'])
+        : null;
+
+    Task task = Task(id, name, createdAt, dueDate, description, completedAt);
+
+    return task;
+  }
+
+  DateTime timeStampToDateTime(Timestamp timestamp) {
+    return DateTime.parse(timestamp.toDate().toString());
+  }
+
   int get taskCount {
     return _tasks.length;
   }
 
-  Task findTaskById(String id) {
-    return _tasks.firstWhere(
-      (task) => task.id == id,
-      orElse: () => throw Exception,
-    );
+  Future<Task> getTaskById(String id) async {
+    DocumentSnapshot<Map<String, dynamic>> doc = await _firebaseFirestore
+        .collection('users')
+        .doc(_uid)
+        .collection('tasks')
+        .doc(id)
+        .get();
+
+    Task task = formatTask(doc);
+
+    return task;
   }
 
-  void addTask(Task task) {
-    _tasks.add(task);
-    _tasks.sort((a, b) => a.dueDate.compareTo(b.dueDate));
-    notifyListeners();
+  Future<void> addTask(Task task) {
+    return _firebaseFirestore
+        .collection('users')
+        .doc(_uid)
+        .collection('tasks')
+        .add({
+      'id': task.id,
+      'name': task.name,
+      'createdAt': task.createdAt,
+      'dueDate': task.dueDate,
+      'description': task.description,
+      'completedAt': task.completedAt,
+    }).catchError((error) => throw error);
   }
 
-  void updateTask(String id, Task newTask) {
-    final taskIndex = _tasks.indexWhere((task) => task.id == id);
-    if (taskIndex >= 0) {
-      _tasks[taskIndex] = newTask;
-      notifyListeners();
-    }
+  Future<void> updateTask(String id, Task task) {
+    return _firebaseFirestore
+        .collection('users')
+        .doc(_uid)
+        .collection('tasks')
+        .doc(id)
+        .update({
+      'id': task.id,
+      'name': task.name,
+      'createdAt': task.createdAt,
+      'dueDate': task.dueDate,
+      'description': task.description,
+      'completedAt': task.completedAt,
+    }).catchError((error) => throw error);
   }
 
-  void deleteTask(String id) {
-    _tasks.removeWhere((task) => task.id == id);
-    notifyListeners();
+  Future<void> deleteTask(String id) {
+    return _firebaseFirestore
+        .collection('users')
+        .doc(_uid)
+        .collection('tasks')
+        .doc(id)
+        .update({
+      'completedAt': DateTime.now(),
+      'isDeleted': true,
+    }).catchError((error) => throw error);
   }
 
-  void completeTask(String id) {
-    final taskIndex = _tasks.indexWhere((task) => task.id == id);
-    _completedTasks.add(_tasks.removeAt(taskIndex));
-    notifyListeners();
+  Future<void> completeTask(String id) {
+    return _firebaseFirestore
+        .collection('users')
+        .doc(_uid)
+        .collection('tasks')
+        .doc(id)
+        .update({
+      'completedAt': DateTime.now(),
+    }).catchError((error) => throw error);
   }
 }

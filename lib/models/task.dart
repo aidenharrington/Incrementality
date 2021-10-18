@@ -7,6 +7,7 @@ class Task {
   DateTime dueDate;
   String? description;
   DateTime? completedAt;
+  bool isDeleted;
 
   Task(
     this.id,
@@ -15,5 +16,6 @@ class Task {
     this.dueDate, [
     this.description,
     this.completedAt,
+    this.isDeleted = false,
   ]);
 }
