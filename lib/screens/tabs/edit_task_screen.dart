@@ -17,7 +17,6 @@ class _EditTaskScreenState extends State<EditTaskScreen> {
   TextEditingController _dateController = TextEditingController();
   TextEditingController _timeController = TextEditingController();
   DateTime _selectedDate = DateTime.now();
-  TimeOfDay _selectedTime = TimeOfDay.now();
   late Task _task;
   var _isInit = true;
   var _isLoading = false;
@@ -54,7 +53,7 @@ class _EditTaskScreenState extends State<EditTaskScreen> {
           setState(() {
             _isNewTask = false;
             _dateController.text = _formatDate(_task.dueDate);
-            _timeController.text = _formatTime(_task.dueTime);
+            _timeController.text = _formatTime(_task.dueDate);
           });
         } catch (error) {
           print(error);
@@ -66,7 +65,6 @@ class _EditTaskScreenState extends State<EditTaskScreen> {
             '',
             DateTime.now(),
             DateTime.now(),
-            TimeOfDay.now(),
           );
         });
       }
@@ -87,8 +85,8 @@ class _EditTaskScreenState extends State<EditTaskScreen> {
     );
     if (picked != null) {
       setState(() {
-        _selectedDate = picked;
-        _dateController.text = _formatDate(picked);
+        _selectedDate = _dateToDateTime(picked);
+        _dateController.text = _formatDate(_selectedDate);
       });
     }
   }
@@ -96,31 +94,47 @@ class _EditTaskScreenState extends State<EditTaskScreen> {
   void _selectTime(BuildContext context) async {
     final TimeOfDay? picked = await showTimePicker(
       context: context,
-      initialTime: _selectedTime,
+      initialTime: TimeOfDay.now(),
       initialEntryMode: TimePickerEntryMode.input,
     );
     if (picked != null) {
       setState(() {
-        _selectedTime = picked;
-        _timeController.text = _formatTime(picked);
+        _selectedDate = _timeToDateTime(picked);
+        _timeController.text = _formatTime(_selectedDate);
       });
     }
+  }
+
+  DateTime _dateToDateTime(DateTime date) {
+    DateTime dateTime = DateTime(
+      date.year,
+      date.month,
+      date.day,
+      _selectedDate.hour,
+      _selectedDate.minute,
+    );
+
+    return dateTime;
+  }
+
+  DateTime _timeToDateTime(TimeOfDay time) {
+    DateTime dateTime = DateTime(
+      _selectedDate.year,
+      _selectedDate.month,
+      _selectedDate.day,
+      time.hour,
+      time.minute,
+    );
+
+    return dateTime;
   }
 
   String _formatDate(DateTime date) {
     return DateFormat.yMd().format(date);
   }
 
-  String _formatTime(TimeOfDay time) {
-    return DateFormat.jm().format(
-      DateTime(
-        _selectedDate.year,
-        _selectedDate.month,
-        _selectedDate.day,
-        time.hour,
-        time.minute,
-      ),
-    );
+  String _formatTime(DateTime time) {
+    return DateFormat.jm().format(time);
   }
 
   @override
@@ -189,7 +203,7 @@ class _EditTaskScreenState extends State<EditTaskScreen> {
                     TextFormField(
                       onTap: () => _selectTime(context),
                       onSaved: (value) {
-                        _task.dueTime = _selectedTime;
+                        _task.dueDate = _selectedDate;
                       },
                       controller: _timeController,
                       decoration: InputDecoration(

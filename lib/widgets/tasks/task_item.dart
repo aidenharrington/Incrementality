@@ -123,8 +123,8 @@ class TaskItem extends StatelessWidget {
                       task.dueDate.year,
                       task.dueDate.month,
                       task.dueDate.day,
-                      task.dueTime.hour,
-                      task.dueTime.minute,
+                      task.dueDate.hour,
+                      task.dueDate.minute,
                     ),
                   ) +
                   " " +

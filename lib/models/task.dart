@@ -5,7 +5,6 @@ class Task {
   String name;
   DateTime createdAt;
   DateTime dueDate;
-  TimeOfDay dueTime;
   String? description;
   DateTime? completedAt;
 
@@ -13,8 +12,7 @@ class Task {
     this.id,
     this.name,
     this.createdAt,
-    this.dueDate,
-    this.dueTime, [
+    this.dueDate, [
     this.description,
     this.completedAt,
   ]);

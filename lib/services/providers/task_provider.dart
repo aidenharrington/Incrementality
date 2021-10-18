@@ -9,34 +9,64 @@ import '../../models/task.dart';
 
 class TaskProvider with ChangeNotifier {
   late FirebaseFirestore _firebaseFirestore;
-  late Stream<QuerySnapshot> _tasksStream;
+  late String _uid;
 
   List<Task> _tasks = [];
   List<Task> _completedTasks = [];
 
-  void update(AppUser? user, {FirebaseFirestore? firebaseFirestore}) {
+  Future<void> update(AppUser? user,
+      {FirebaseFirestore? firebaseFirestore}) async {
     final String? uid = user?.uid;
     if (uid != null) {
       firebaseFirestore != null
           ? _firebaseFirestore = firebaseFirestore
           : _firebaseFirestore = FirebaseFirestore.instance;
 
-      _tasksStream = _firebaseFirestore
-          .collection('users')
-          .doc(uid)
-          .collection('tasks')
-          .snapshots();
+      _uid = uid;
+      await _updateActiveTasks();
     }
   }
 
-  Stream<QuerySnapshot> get tasksStream {
-    return _tasksStream;
+  Future<List<Task>> get activeTasks async {
+    await _updateActiveTasks();
+    return _tasks;
   }
 
-  Future<List<Task>> get tasks {
-    //get tasks
+  Future<void> _updateActiveTasks() async {
+    QuerySnapshot<Map<String, dynamic>> snapshot = await _firebaseFirestore
+        .collection('users')
+        .doc(_uid)
+        .collection('tasks')
+        .where('completedAt', isNull: false)
+        .get();
 
-    //TODO think of way of handling completed and deleted tasks
+    //TODO sort by date
+
+    List<QueryDocumentSnapshot> taskDocs = snapshot.docs;
+
+    _tasks = formatTasks(taskDocs);
+  }
+
+  List<Task> formatTasks(List<QueryDocumentSnapshot> taskDocs) {
+    List<Task> tasks = [];
+
+    for (var doc in taskDocs) {
+      if (doc.data() != null) {
+        var data = doc.data() as Map<String, dynamic>;
+        String id = data['id'];
+        String name = data['name'];
+        DateTime createdAt = data['createdAt'];
+        DateTime dueDate = data['dueDate'];
+        String? description = data['description'];
+        DateTime? completedAt = data['completedAt'];
+
+        Task task =
+            Task(id, name, createdAt, dueDate, description, completedAt);
+        tasks.add(task);
+      }
+    }
+
+    return tasks;
   }
 
   int get taskCount {

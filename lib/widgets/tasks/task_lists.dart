@@ -1,4 +1,3 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
@@ -44,31 +43,38 @@ class _TasksListState extends State<TasksList> {
 
   @override
   Widget build(BuildContext context) {
-    TaskProvider taskProvider = Provider.of<TaskProvider>(context);
-    Stream<QuerySnapshot> tasksStream = taskProvider.tasksStream;
+    return FutureBuilder<List<Task>>(
+        future: Provider.of<TaskProvider>(context).activeTasks,
+        builder: (BuildContext context, AsyncSnapshot<List<Task>> snapshot) {
+          if (snapshot.hasError) {
+            return Text("Something went wrong");
+          }
 
-    return StreamBuilder(
-      stream: tasksStream,
-      builder: (BuildContext context, AsyncSnapshot<QuerySnapshot> snapshot) {
-        if (snapshot.hasError) {
-          return Text('Something went wrong');
-        }
+          if (snapshot.connectionState == ConnectionState.done) {
+            List<Task>? tasks = snapshot.data;
 
-        if (snapshot.connectionState == ConnectionState.waiting) {
-          return Text("Loading");
-        }
+            return tasks == null || tasks.isEmpty
+                ? Container(
+                    child: Center(
+                      child: Text(
+                        'No tasks yet.',
+                        style: TextStyle(
+                          fontSize: 40,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                    ),
+                  )
+                : ListView.builder(
+                    itemCount: tasks.length,
+                    itemBuilder: (ctx, i) {
+                      return _newDate(tasks, i)
+                          ? _showDateAndWidget(tasks[i])
+                          : TaskItem(tasks[i]);
+                    });
+          }
 
-        return ListView(
-          children: snapshot.data!.docs.map((DocumentSnapshot document) {
-            Map<String, dynamic> data =
-                document.data()! as Map<String, dynamic>;
-            return ListTile(
-              title: Text(data['full_name']),
-              subtitle: Text(data['company']),
-            );
-          }).toList(),
-        );
-      },
-    );
+          return Text('Loading');
+        });
   }
 }
