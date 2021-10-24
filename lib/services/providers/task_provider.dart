@@ -38,10 +38,8 @@ class TaskProvider with ChangeNotifier {
         .doc(_uid)
         .collection('tasks')
         .where('completedAt', isNull: true)
-        .orderBy('dueDate', descending: true)
+        .orderBy('dueDate', descending: false)
         .get();
-
-    //TODO sort by date
 
     List<QueryDocumentSnapshot> taskDocs = snapshot.docs;
 

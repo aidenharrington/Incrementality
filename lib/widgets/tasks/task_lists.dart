@@ -14,27 +14,47 @@ class TasksList extends StatefulWidget {
 class _TasksListState extends State<TasksList> {
   bool _newDate(List<Task> tasks, int index) {
     if (index > 0) {
-      if (tasks[index].dueDate != tasks[index - 1].dueDate) {
-        return true;
-      } else {
-        return false;
-      }
+      return !_isSameDay(tasks[index].dueDate, tasks[index - 1].dueDate);
     } else {
-      final now = DateTime.now();
-      final today = DateTime(now.year, now.month, now.day);
-      if (tasks[index].dueDate != today) {
-        return true;
-      }
+      return true;
     }
-    return false;
+  }
+
+  bool _isSameDay(DateTime dayOne, DateTime dayTwo) {
+    return dayOne.day == dayTwo.day &&
+        dayOne.month == dayTwo.month &&
+        dayOne.year == dayTwo.year;
+  }
+
+  bool _isDateInPast(DateTime day) {
+    DateTime today = DateTime.now();
+    return day.isBefore(today) && !_isSameDay(day, today);
   }
 
   Widget _showDateAndWidget(Task task) {
+    DateTime today = DateTime.now();
+    DateTime tomorrow = today.add(const Duration(days: 1));
+    String dateText;
+    bool taskOverdue = _isDateInPast(task.dueDate);
+
+    if (_isSameDay(task.dueDate, today)) {
+      dateText = 'Today';
+    } else if (_isSameDay(task.dueDate, tomorrow)) {
+      dateText = 'Tomorrow';
+    } else {
+      dateText = DateFormat.yMMMd().format(task.dueDate);
+    }
+
     return Column(
       children: [
         Padding(
           padding: const EdgeInsets.only(top: 15),
-          child: Text(DateFormat.yMMMd().format(task.dueDate)),
+          child: Text(
+            dateText,
+            style: TextStyle(
+              color: taskOverdue ? Colors.red : Colors.black,
+            ),
+          ),
         ),
         TaskItem(task),
       ],

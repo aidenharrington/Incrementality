@@ -118,15 +118,7 @@ class TaskItem extends StatelessWidget {
             elevation: 5,
             child: ListTile(
               title: Text(task.name),
-              subtitle: Text(DateFormat.jm().format(
-                    DateTime(
-                      task.dueDate.year,
-                      task.dueDate.month,
-                      task.dueDate.day,
-                      task.dueDate.hour,
-                      task.dueDate.minute,
-                    ),
-                  ) +
+              subtitle: Text(DateFormat.jm().format(task.dueDate) +
                   " " +
                   DateFormat.yMMMd().format(task.dueDate)),
               trailing: Container(
