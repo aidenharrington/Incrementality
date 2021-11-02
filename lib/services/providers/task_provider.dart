@@ -61,7 +61,7 @@ class TaskProvider with ChangeNotifier {
 
   Task formatTask(DocumentSnapshot doc) {
     var data = doc.data() as Map<String, dynamic>;
-    String id = data['id'];
+    String id = doc.reference.id;
     String name = data['name'];
     DateTime createdAt = timeStampToDateTime(data['createdAt']);
     DateTime dueDate = timeStampToDateTime(data['dueDate']);
@@ -102,7 +102,6 @@ class TaskProvider with ChangeNotifier {
         .doc(_uid)
         .collection('tasks')
         .add({
-      'id': task.id,
       'name': task.name,
       'createdAt': task.createdAt,
       'dueDate': task.dueDate,
@@ -111,23 +110,29 @@ class TaskProvider with ChangeNotifier {
     }).catchError((error) => throw error);
   }
 
-  Future<void> updateTask(String id, Task task) {
+  Future<void> updateTask(String id, Task updatedTask) {
+    int index = _tasks.indexWhere((task) => task.id == id);
+    _tasks.replaceRange(index, index + 1, [updatedTask]);
+    notifyListeners();
+
     return _firebaseFirestore
         .collection('users')
         .doc(_uid)
         .collection('tasks')
         .doc(id)
         .update({
-      'id': task.id,
-      'name': task.name,
-      'createdAt': task.createdAt,
-      'dueDate': task.dueDate,
-      'description': task.description,
-      'completedAt': task.completedAt,
+      'name': updatedTask.name,
+      'createdAt': updatedTask.createdAt,
+      'dueDate': updatedTask.dueDate,
+      'description': updatedTask.description,
+      'completedAt': updatedTask.completedAt,
     }).catchError((error) => throw error);
   }
 
   Future<void> deleteTask(String id) {
+    removeTaskFromList(id);
+    notifyListeners();
+
     return _firebaseFirestore
         .collection('users')
         .doc(_uid)
@@ -140,6 +145,9 @@ class TaskProvider with ChangeNotifier {
   }
 
   Future<void> completeTask(String id) {
+    removeTaskFromList(id);
+    notifyListeners();
+
     return _firebaseFirestore
         .collection('users')
         .doc(_uid)
@@ -148,5 +156,9 @@ class TaskProvider with ChangeNotifier {
         .update({
       'completedAt': DateTime.now(),
     }).catchError((error) => throw error);
+  }
+
+  void removeTaskFromList(String id) {
+    _tasks.removeWhere((task) => task.id == id);
   }
 }

@@ -22,22 +22,6 @@ class _EditTaskScreenState extends State<EditTaskScreen> {
   var _isLoading = false;
   bool _isNewTask = true;
 
-  Future<void> _saveForm() async {
-    bool? valid = _form.currentState?.validate();
-    if (valid == null || !valid) {
-      return;
-    }
-    _form.currentState?.save();
-    if (!_isNewTask) {
-      await Provider.of<TaskProvider>(context, listen: false)
-          .updateTask(_task.id, _task);
-    } else {
-      _task.createdAt = DateTime.now();
-      await Provider.of<TaskProvider>(context, listen: false).addTask(_task);
-    }
-    Navigator.of(context).pop();
-  }
-
   @override
   void didChangeDependencies() async {
     if (_isInit) {
@@ -48,9 +32,11 @@ class _EditTaskScreenState extends State<EditTaskScreen> {
           ModalRoute.of(context)?.settings.arguments as String?;
       if (taskId != null && taskId.isNotEmpty) {
         try {
-          _task = await Provider.of<TaskProvider>(context, listen: false)
+          Task task = await Provider.of<TaskProvider>(context, listen: false)
               .getTaskById(taskId);
+          print(task.id);
           setState(() {
+            _task = task;
             _isNewTask = false;
             _dateController.text = _formatDate(_task.dueDate);
             _timeController.text = _formatTime(_task.dueDate);
@@ -74,6 +60,22 @@ class _EditTaskScreenState extends State<EditTaskScreen> {
     });
     _isInit = false;
     super.didChangeDependencies();
+  }
+
+  Future<void> _saveForm() async {
+    bool? valid = _form.currentState?.validate();
+    if (valid == null || !valid) {
+      return;
+    }
+    _form.currentState?.save();
+    if (!_isNewTask) {
+      await Provider.of<TaskProvider>(context, listen: false)
+          .updateTask(_task.id, _task);
+    } else {
+      _task.createdAt = DateTime.now();
+      await Provider.of<TaskProvider>(context, listen: false).addTask(_task);
+    }
+    Navigator.of(context).pop();
   }
 
   void _selectDate(BuildContext context) async {
@@ -139,21 +141,21 @@ class _EditTaskScreenState extends State<EditTaskScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: Text(_task.name),
-        actions: [
-          IconButton(
-            icon: Icon(Icons.save),
-            onPressed: _saveForm,
-          ),
-        ],
-      ),
-      body: _isLoading
-          ? Center(
-              child: CircularProgressIndicator(),
-            )
-          : Padding(
+    return _isLoading
+        ? Center(
+            child: CircularProgressIndicator(),
+          )
+        : Scaffold(
+            appBar: AppBar(
+              title: Text(_task.name),
+              actions: [
+                IconButton(
+                  icon: Icon(Icons.save),
+                  onPressed: _saveForm,
+                ),
+              ],
+            ),
+            body: Padding(
               padding: EdgeInsets.all(16),
               child: Form(
                 key: _form,
@@ -221,6 +223,6 @@ class _EditTaskScreenState extends State<EditTaskScreen> {
                 ),
               ),
             ),
-    );
+          );
   }
 }
