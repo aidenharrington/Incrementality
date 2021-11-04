@@ -1,8 +1,6 @@
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:incrementality/screens/sign_in_screen.dart';
-import 'package:incrementality/services/firebase_auth_service.dart';
 import 'package:incrementality/services/providers/auth_provider.dart';
 import 'package:provider/provider.dart';
 
