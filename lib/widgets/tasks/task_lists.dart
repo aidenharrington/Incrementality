@@ -72,7 +72,6 @@ class _TasksListState extends State<TasksList> {
 
           if (snapshot.connectionState == ConnectionState.done) {
             List<Task>? tasks = snapshot.data;
-
             return tasks == null || tasks.isEmpty
                 ? Container(
                     child: Center(

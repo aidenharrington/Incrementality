@@ -96,8 +96,8 @@ class TaskProvider with ChangeNotifier {
     return task;
   }
 
-  Future<void> addTask(Task task) {
-    return _firebaseFirestore
+  Future<void> addTask(Task task) async {
+    await _firebaseFirestore
         .collection('users')
         .doc(_uid)
         .collection('tasks')
@@ -108,6 +108,9 @@ class TaskProvider with ChangeNotifier {
       'description': task.description,
       'completedAt': task.completedAt,
     }).catchError((error) => throw error);
+
+    _updateActiveTasks();
+    notifyListeners();
   }
 
   Future<void> updateTask(String id, Task updatedTask) {
