@@ -9,10 +9,9 @@ import '../../models/task.dart';
 
 class TaskProvider with ChangeNotifier {
   late FirebaseFirestore _firebaseFirestore;
-  late String _uid;
+  String? _uid;
 
   List<Task> _tasks = [];
-  List<Task> _completedTasks = [];
 
   Future<void> update(AppUser? user,
       {FirebaseFirestore? firebaseFirestore}) async {
@@ -33,6 +32,10 @@ class TaskProvider with ChangeNotifier {
   }
 
   Future<void> _updateActiveTasks() async {
+    if (_uid == null) {
+      return;
+    }
+
     QuerySnapshot<Map<String, dynamic>> snapshot = await _firebaseFirestore
         .collection('users')
         .doc(_uid)
@@ -43,15 +46,15 @@ class TaskProvider with ChangeNotifier {
 
     List<QueryDocumentSnapshot> taskDocs = snapshot.docs;
 
-    _tasks = formatTasks(taskDocs);
+    _tasks = _formatTasks(taskDocs);
   }
 
-  List<Task> formatTasks(List<QueryDocumentSnapshot> taskDocs) {
+  List<Task> _formatTasks(List<QueryDocumentSnapshot> taskDocs) {
     List<Task> tasks = [];
 
     for (var doc in taskDocs) {
       if (doc.data() != null) {
-        Task task = formatTask(doc);
+        Task task = _formatTask(doc);
         tasks.add(task);
       }
     }
@@ -59,15 +62,15 @@ class TaskProvider with ChangeNotifier {
     return tasks;
   }
 
-  Task formatTask(DocumentSnapshot doc) {
+  Task _formatTask(DocumentSnapshot doc) {
     var data = doc.data() as Map<String, dynamic>;
     String id = doc.reference.id;
     String name = data['name'];
-    DateTime createdAt = timeStampToDateTime(data['createdAt']);
-    DateTime dueDate = timeStampToDateTime(data['dueDate']);
+    DateTime createdAt = _timeStampToDateTime(data['createdAt']);
+    DateTime dueDate = _timeStampToDateTime(data['dueDate']);
     String? description = data['description'];
     DateTime? completedAt = data['completedAt'] != null
-        ? timeStampToDateTime(data['completedAt'])
+        ? _timeStampToDateTime(data['completedAt'])
         : null;
 
     Task task = Task(id, name, createdAt, dueDate, description, completedAt);
@@ -75,7 +78,7 @@ class TaskProvider with ChangeNotifier {
     return task;
   }
 
-  DateTime timeStampToDateTime(Timestamp timestamp) {
+  DateTime _timeStampToDateTime(Timestamp timestamp) {
     return DateTime.parse(timestamp.toDate().toString());
   }
 
@@ -84,6 +87,7 @@ class TaskProvider with ChangeNotifier {
   }
 
   Future<Task> getTaskById(String id) async {
+    _updateActiveTasks();
     DocumentSnapshot<Map<String, dynamic>> doc = await _firebaseFirestore
         .collection('users')
         .doc(_uid)
@@ -91,12 +95,16 @@ class TaskProvider with ChangeNotifier {
         .doc(id)
         .get();
 
-    Task task = formatTask(doc);
+    Task task = _formatTask(doc);
 
     return task;
   }
 
   Future<void> addTask(Task task) async {
+    if (_uid == null) {
+      return;
+    }
+
     await _firebaseFirestore
         .collection('users')
         .doc(_uid)
@@ -113,12 +121,12 @@ class TaskProvider with ChangeNotifier {
     notifyListeners();
   }
 
-  Future<void> updateTask(String id, Task updatedTask) {
-    int index = _tasks.indexWhere((task) => task.id == id);
-    _tasks.replaceRange(index, index + 1, [updatedTask]);
-    notifyListeners();
+  Future<void> updateTask(String id, Task updatedTask) async {
+    if (_uid == null) {
+      return;
+    }
 
-    return _firebaseFirestore
+    await _firebaseFirestore
         .collection('users')
         .doc(_uid)
         .collection('tasks')
@@ -130,13 +138,17 @@ class TaskProvider with ChangeNotifier {
       'description': updatedTask.description,
       'completedAt': updatedTask.completedAt,
     }).catchError((error) => throw error);
+
+    _updateActiveTasks();
+    notifyListeners();
   }
 
-  Future<void> deleteTask(String id) {
-    removeTaskFromList(id);
-    notifyListeners();
+  Future<void> deleteTask(String id) async {
+    if (_uid == null) {
+      return;
+    }
 
-    return _firebaseFirestore
+    await _firebaseFirestore
         .collection('users')
         .doc(_uid)
         .collection('tasks')
@@ -145,13 +157,17 @@ class TaskProvider with ChangeNotifier {
       'completedAt': DateTime.now(),
       'isDeleted': true,
     }).catchError((error) => throw error);
+
+    _updateActiveTasks();
+    notifyListeners();
   }
 
-  Future<void> completeTask(String id) {
-    removeTaskFromList(id);
-    notifyListeners();
+  Future<void> completeTask(String id) async {
+    if (_uid == null) {
+      return;
+    }
 
-    return _firebaseFirestore
+    await _firebaseFirestore
         .collection('users')
         .doc(_uid)
         .collection('tasks')
@@ -159,9 +175,8 @@ class TaskProvider with ChangeNotifier {
         .update({
       'completedAt': DateTime.now(),
     }).catchError((error) => throw error);
-  }
 
-  void removeTaskFromList(String id) {
-    _tasks.removeWhere((task) => task.id == id);
+    _updateActiveTasks();
+    notifyListeners();
   }
 }
