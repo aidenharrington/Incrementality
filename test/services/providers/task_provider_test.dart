@@ -117,5 +117,27 @@ void main() {
     expect(taskList[0].name, updatedName);
   });
 
-  test('delete task', () async {});
+  test('delete task', () async {
+    final firestore = FakeFirebaseFirestore();
+    String idOne = await addTaskToFirestore(firestore, userOne, taskOne);
+
+    TaskProvider taskProvider = TaskProvider();
+    taskProvider.update(userOne, firebaseFirestore: firestore);
+    taskProvider.deleteTask(idOne);
+    List<Task> taskList = await taskProvider.activeTasks;
+
+    expect(taskList.length, 0);
+  });
+
+  test('complete task', () async {
+    final firestore = FakeFirebaseFirestore();
+    String idOne = await addTaskToFirestore(firestore, userOne, taskOne);
+
+    TaskProvider taskProvider = TaskProvider();
+    taskProvider.update(userOne, firebaseFirestore: firestore);
+    taskProvider.completeTask(idOne);
+    List<Task> taskList = await taskProvider.activeTasks;
+
+    expect(taskList.length, 0);
+  });
 }
